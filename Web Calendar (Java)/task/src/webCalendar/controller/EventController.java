@@ -12,4 +12,13 @@ public class EventController {
     public List<Object> getTodayEvents() {
         return List.of();
     }
+
+    @PostMapping("/event")
+    public Map<String, String> createEvent(@Valid @RequestBody EventRequest req) {
+        return Map.of(
+                "message", "The event has been added!",
+                "event", req.getEvent(),
+                "date", req.getDate().toString()
+        );
+    }
 }
