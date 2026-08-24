@@ -1,0 +1,16 @@
+# Hyperskill internal files
+.hs/
+
+# Build & compiled outputs (no leading slashes!)
+build/
+out/
+target/
+.gradle/
+
+# IDE files
+.idea/
+*.iml
+
+# Hyperskill course metadata & theory descriptions
+*-info.yaml
+*.html

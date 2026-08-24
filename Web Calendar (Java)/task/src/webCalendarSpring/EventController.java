@@ -8,7 +8,7 @@ import java.util.List;
 @RestController
 public class EventController {
 
-    @GetMapping("/events/today")
+    @GetMapping("/event/today")
     public List<Object> getTodayEvents() {
         return List.of();
     }
