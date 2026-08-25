@@ -29,8 +29,9 @@ public class EventController {
     }
 
     @GetMapping("/event/today")
-    public List<Object> getTodayEvents() {
-        return List.of();
+    public ResponseEntity<List<Event>> getTodayEvents() {
+        List<Event> todayEvents = repository.findByDate(LocalDate.now());
+        return ResponseEntity.ok(todayEvents);
     }
 
     @PostMapping("/event")
