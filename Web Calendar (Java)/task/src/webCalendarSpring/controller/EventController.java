@@ -28,6 +28,13 @@ public class EventController {
         return ResponseEntity.ok(events);
     }
 
+    @GetMapping("/event/{id}")
+    public ResponseEntity<Event> getEventById(@PathVariable("id") Long id) {
+        return repository.findById(id)
+                .map(event -> new ResponseEntity<>(event, HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
     @GetMapping("/event/today")
     public ResponseEntity<List<Event>> getTodayEvents() {
         List<Event> todayEvents = repository.findByDate(LocalDate.now());
