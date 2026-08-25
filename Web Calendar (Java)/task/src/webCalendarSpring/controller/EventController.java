@@ -56,6 +56,15 @@ public class EventController {
                 "date", req.getDate().toString()
         );
     }
+
+    @DeleteMapping("/event/{id}")
+    public ResponseEntity<Event> deleteEventById(@PathVariable("id") Long id) {
+        ResponseEntity<Event> event = getEventById(id);
+        repository.deleteById(id);
+
+        return event;
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Void> handleValidationExceptions() {
         // This intercepts the validation error and returns a 400 status with an empty body
