@@ -11,6 +11,22 @@ import java.util.Map;
 
 @RestController
 public class EventController {
+    private final EventRepository repository;
+
+    public EventController(EventRepository repository) {
+        this.repository = repository;
+    }
+
+    @GetMapping("/event")
+    public ResponseEntity<List<Event>> getAllEvents() {
+        List<Event> events = repository.findAll();
+
+        if (events.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(events);
+    }
 
     @GetMapping("/event/today")
     public List<Object> getTodayEvents() {
