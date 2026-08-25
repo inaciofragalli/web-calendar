@@ -35,6 +35,12 @@ public class EventController {
 
     @PostMapping("/event")
     public Map<String, String> createEvent(@Valid @RequestBody EventRequest req) {
+        Event newEvent = new Event();
+        newEvent.setEvent(req.getEvent());
+        newEvent.setDate(req.getDate());
+
+        repository.save(newEvent);
+
         return Map.of(
                 "message", "The event has been added!",
                 "event", req.getEvent(),
