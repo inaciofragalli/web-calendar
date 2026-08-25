@@ -18,7 +18,18 @@ public class EventController {
     }
 
     @GetMapping("/event")
-    public ResponseEntity<List<Event>> getAllEvents() {
+    @ResponseBody
+    public ResponseEntity<List<Event>> getAllEvents(@RequestParam(required = false) LocalDate start_time, LocalDate end_time) {
+        if (start_time != null && end_time != null) {
+            List<Event> events = repository.findByDateBetween(start_time, end_time);
+
+            if (events.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+
+            return ResponseEntity.ok(events);
+        }
+
         List<Event> events = repository.findAll();
 
         if (events.isEmpty()) {
