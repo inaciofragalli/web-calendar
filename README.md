@@ -1,31 +1,57 @@
 # Web Calendar API
 
 ## Project Overview
-This project is a RESTful backend application built to manage calendar events and dates. It transitions core application architecture from manual object initialization to the **Spring Inversion of Control (IoC) container**, implementing **Spring Beans, Components, and Dependency Injection**. It handles HTTP requests, processes JSON payloads, and connects to relational database structures using Spring Data JPA.
+This project is a RESTful backend application built with Spring Boot to manage calendar events. It handles HTTP requests, processes JSON payloads, validates input data, and persists records using Spring Data JPA and an embedded H2 database.
 
 ---
 
 ## Tech Stack
-*   **Language:** Java
-*   **Framework:** Spring Boot (Spring Web MVC & Spring Data JPA)
-*   **Build Tool:** Gradle
-*   **Testing:** JUnit & Mockito
-*   **Tools:** IntelliJ IDEA, Postman, Git
+* **Language:** Java 17
+* **Framework:** Spring Boot 3.4 (Spring Web MVC & Spring Data JPA)
+* **Build Tool:** Gradle (with pinned Wrapper)
+* **Database:** H2 Database
+* **Tools:** IntelliJ IDEA, Postman, Git
 
 ---
 
-## Core Architecture & Learning Concepts
-*   **Spring Container & Lifecycle:** Utilizes `@Bean`, `@Component`, Spring Stereotypes, and `ApplicationContext` to manage the application lifecycle and scopes.
-*   **RESTful Web Services:** Implements Controllers to handle HTTP methods (`GET`, `POST`, `DELETE`) mapping incoming URLs, query parameters, and request bodies.
-*   **Data & Validation:** Employs Bean Validation, JSON serialization/deserialization, and Java's `LocalDate` for handling temporal data.
-*   **Persistence Layer:** Integrates relational data models, Object-Relational Mapping (ORM), Entities, and CRUD repositories for structured data storage.
+## Core Architecture & Features
+* **RESTful Web Services:** Implements `EventController` to handle HTTP methods (`GET`, `POST`, `DELETE`), mapping incoming URLs, query parameters, and JSON request bodies.
+* **Input Validation & Exception Handling:** 
+  * Utilizes Jakarta Bean Validation (`@NotBlank`, `@NotNull`) via `EventRequest` to enforce data integrity.
+  * Intercepts `MethodArgumentNotValidException` to return clean `400 Bad Request` responses.
+  * Throws custom `EventNotFoundException` when a requested resource is missing.
+* **Persistence Layer:** Integrates Spring Data JPA `JpaRepository` interfaces and `@Entity` models mapped to temporal `LocalDate` fields.
 
+---
+
+## API Endpoints
+* `GET /event` — Retrieves all events or filters them using optional `start_time` and `end_time` query parameters.
+* `GET /event/today` — Fetches all events scheduled for the current date.
+* `GET /event/{id}` — Retrieves a specific event by its unique identifier.
+* `POST /event` — Creates and validates a new calendar event.
+* `DELETE /event/{id}` — Deletes an event by its ID.
+* **Request Body Example (JSON):**
+    ```json
+    {
+      "event": "Java's birthday",
+      "date": "2026-08-30"
+    }
+    ```
 ---
 
 ## Getting Started
-To run this project locally, clone the repository and launch it via your IDE or terminal:
+To run this project locally, clone the repository and launch it via your terminal or IDE:
 
-1. Clone the repository: `git clone github.com/inaciofragalli/web-calendar.git)`
-2. Open the project in IntelliJ IDEA (or your preferred IDE) and let Gradle download dependencies.
-3. Run the Spring Boot application configuration.
-4. Test endpoints locally using Postman or a web browser at `http://localhost:8080`.
+1. Clone the repository: 
+   ```bash
+   git clone https://github.com/inaciofragalli/web-calendar.git
+   
+2. Navigate into the project directory:
+   ```bash
+   cd web-calendar
+
+3. Run the application using the Gradle wrapper:
+   ```bash
+   ./gradlew bootRun
+   
+4. Test endpoints locally using Postman (recommended for testing `POST` and `DELETE` requests) or a web browser for `GET` requests.
