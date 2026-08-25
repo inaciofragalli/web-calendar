@@ -30,9 +30,10 @@ public class EventController {
 
     @GetMapping("/event/{id}")
     public ResponseEntity<Event> getEventById(@PathVariable("id") Long id) {
-        return repository.findById(id)
-                .map(event -> new ResponseEntity<>(event, HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        Event event = repository.findById(id)
+                .orElseThrow(() -> new EventNotFoundException("The event doesn't exist"));
+        
+        return ResponseEntity.ok(event);
     }
 
     @GetMapping("/event/today")
