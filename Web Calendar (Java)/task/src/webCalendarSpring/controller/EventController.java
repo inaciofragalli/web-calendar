@@ -5,7 +5,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import webCalendarSpring.dto.EventRequest;
+import webCalendarSpring.exception.EventNotFoundException;
+import webCalendarSpring.model.Event;
+import webCalendarSpring.repository.EventRepository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -42,8 +46,8 @@ public class EventController {
     @GetMapping("/event/{id}")
     public ResponseEntity<Event> getEventById(@PathVariable("id") Long id) {
         Event event = repository.findById(id)
-                .orElseThrow(() -> new EventNotFoundException("The event doesn't exist"));
-        
+                .orElseThrow(() -> new EventNotFoundException("The event doesn't exist!"));
+
         return ResponseEntity.ok(event);
     }
 
