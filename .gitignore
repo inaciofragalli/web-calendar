@@ -1,7 +1,4 @@
-# Hyperskill internal files
-.hs/
-
-# Build & compiled outputs (no leading slashes!)
+# Build & compiled outputs
 build/
 out/
 target/
@@ -11,6 +8,6 @@ target/
 .idea/
 *.iml
 
-# Hyperskill course metadata & theory descriptions
-*-info.yaml
-*.html
+# Local database files
+*.mv.db
+*.trace.db

@@ -5,7 +5,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import webCalendarSpring.dto.EventRequest;
+import webCalendarSpring.exception.EventNotFoundException;
+import webCalendarSpring.model.Event;
+import webCalendarSpring.repository.EventRepository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +22,18 @@ public class EventController {
     }
 
     @GetMapping("/event")
-    public ResponseEntity<List<Event>> getAllEvents() {
+    @ResponseBody
+    public ResponseEntity<List<Event>> getAllEvents(@RequestParam(required = false) LocalDate start_time, LocalDate end_time) {
+        if (start_time != null && end_time != null) {
+            List<Event> events = repository.findByDateBetween(start_time, end_time);
+
+            if (events.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+
+            return ResponseEntity.ok(events);
+        }
+
         List<Event> events = repository.findAll();
 
         if (events.isEmpty()) {
@@ -26,6 +41,14 @@ public class EventController {
         }
 
         return ResponseEntity.ok(events);
+    }
+
+    @GetMapping("/event/{id}")
+    public ResponseEntity<Event> getEventById(@PathVariable("id") Long id) {
+        Event event = repository.findById(id)
+                .orElseThrow(() -> new EventNotFoundException("The event doesn't exist!"));
+
+        return ResponseEntity.ok(event);
     }
 
     @GetMapping("/event/today")
@@ -48,6 +71,15 @@ public class EventController {
                 "date", req.getDate().toString()
         );
     }
+
+    @DeleteMapping("/event/{id}")
+    public ResponseEntity<Event> deleteEventById(@PathVariable("id") Long id) {
+        ResponseEntity<Event> event = getEventById(id);
+        repository.deleteById(id);
+
+        return event;
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Void> handleValidationExceptions() {
         // This intercepts the validation error and returns a 400 status with an empty body
