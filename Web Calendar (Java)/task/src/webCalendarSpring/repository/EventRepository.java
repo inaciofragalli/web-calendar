@@ -10,4 +10,6 @@ import java.util.List;
 @Repository
 public interface EventRepository extends JpaRepository<Event, Integer> {
     List<Event> findByDate(LocalDate date);
+
+    List<Event> findByDateBetween(LocalDate startTime, LocalDate endTime);
 }
