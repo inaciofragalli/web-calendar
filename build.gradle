@@ -1,70 +1,42 @@
-apply plugin: 'hyperskill'
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.4.1'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
 
-subprojects {
-    apply plugin: 'application'
-    apply plugin: 'java'
+group = 'webCalendarSpring'
+version = '0.0.1-SNAPSHOT'
 
-    def userJava = Integer.parseInt(JavaVersion.current().getMajorVersion())
-    def hsJava = Integer.parseInt(hs.java.version)
-    def testJava = Math.max(userJava, hsJava)
-
-    java.toolchain.languageVersion = JavaLanguageVersion.of(testJava)
-
-    compileJava {
-        javaCompiler = javaToolchains.compilerFor {
-            languageVersion = JavaLanguageVersion.of(userJava)
-        }
-    }
-
-    compileTestJava {
-        javaCompiler = javaToolchains.compilerFor {
-            languageVersion = JavaLanguageVersion.of(testJava)
-        }
-    }
-
-    repositories {
-        mavenCentral()
-        maven { url 'https://packages.jetbrains.team/maven/p/hyperskill-hs-test/maven' }
-        maven { url 'https://jitpack.io' }
-    }
-
-    dependencies {
-        testImplementation 'com.github.hyperskill:hs-test:release-SNAPSHOT'
-    }
-
-    configurations.all {
-        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-    }
-
-    sourceSets {
-        main.java.srcDir 'src'
-        test.java.srcDir 'test'
-    }
-
-    test {
-        systemProperty "file.encoding", "utf-8"
-        outputs.upToDateWhen { false }
-    }
-
-    compileJava.options.encoding = 'utf-8'
-    tasks.withType(JavaCompile) {
-        options.encoding = 'utf-8'
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
     }
 }
 
-project(':util') {
-    dependencies {
-        implementation 'com.github.hyperskill:hs-test:release-SNAPSHOT'
+repositories {
+    mavenCentral()
+}
+
+// Aponta exatamente para onde seus arquivos estão guardados
+sourceSets {
+    main {
+        java.srcDirs = ['web-calendar-api/src']
+        resources.srcDirs = ['web-calendar-api/resources']
     }
 }
 
-configure(subprojects.findAll {it.name != 'util'}) {
-    dependencies {
-        testImplementation project(':util').sourceSets.main.output
-        testImplementation project(':util').sourceSets.test.output
-    }
+springBoot {
+    mainClass = 'webCalendarSpring.Main'
 }
 
-wrapper {
-    gradleVersion = hs.gradle.version
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    runtimeOnly 'com.h2database:h2'
+}
+
+test {
+    useJUnitPlatform()
 }
