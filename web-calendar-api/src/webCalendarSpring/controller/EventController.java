@@ -63,12 +63,13 @@ public class EventController {
         newEvent.setEvent(req.getEvent());
         newEvent.setDate(req.getDate());
 
-        repository.save(newEvent);
-
-        return Map.of(
-                "message", "The event has been added!",
-                "event", req.getEvent(),
-                "date", req.getDate().toString()
+    @PostMapping("/newevent")
+    public ResponseEntity<EventCreationResponse> createEvent(@Valid @RequestBody EventRequest req) {
+        EventResponse savedEvent = service.createEvent(req);
+        EventCreationResponse res = new EventCreationResponse(
+                "event was created!",
+                savedEvent.event(),
+                savedEvent.date().toString()
         );
     }
 
