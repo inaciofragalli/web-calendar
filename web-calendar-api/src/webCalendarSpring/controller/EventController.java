@@ -1,84 +1,87 @@
 package webCalendarSpring.controller;
 
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import webCalendarSpring.dto.EventCreationResponse;
+import webCalendarSpring.dto.EventDeletionResponse;
 import webCalendarSpring.dto.EventRequest;
-import webCalendarSpring.exception.EventNotFoundException;
-import webCalendarSpring.model.Event;
-import webCalendarSpring.repository.EventRepository;
+import webCalendarSpring.dto.EventResponse;
+import webCalendarSpring.service.EventService;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 @RestController
+@RequestMapping("/events")
 public class EventController {
-    private final EventRepository repository;
+    private final EventService service;
 
-    public EventController(EventRepository repository) {
-        this.repository = repository;
+    public EventController(EventService service) {
+        this.service = service;
     }
 
-    @GetMapping("/event")
+    @GetMapping()
     @ResponseBody
-    public ResponseEntity<List<Event>> getAllEvents(@RequestParam(required = false) LocalDate start_time, LocalDate end_time) {
-        if (start_time != null && end_time != null) {
-            List<Event> events = repository.findByDateBetween(start_time, end_time);
+    public ResponseEntity<Page<EventResponse>> getAllEvents(Pageable pageable) {
+        Page<EventResponse> res = service.getAllEvents(pageable);
 
-            if (events.isEmpty()) {
-                return ResponseEntity.noContent().build();
-            }
-
-            return ResponseEntity.ok(events);
-        }
-
-        List<Event> events = repository.findAll();
-
-        if (events.isEmpty()) {
+        if (res.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
 
-        return ResponseEntity.ok(events);
+        return ResponseEntity.ok(res);
     }
 
-    @GetMapping("/event/{id}")
-    public ResponseEntity<Event> getEventById(@PathVariable("id") Long id) {
-        Event event = repository.findById(id)
-                .orElseThrow(() -> new EventNotFoundException("The event doesn't exist!"));
+    @GetMapping("/between")
+    public ResponseEntity<List<EventResponse>> getEventBetween(
+            @RequestParam("start_time") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start_time,
+            @RequestParam("end_time") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end_time) {
 
-        return ResponseEntity.ok(event);
+        List<EventResponse> res = service.getEventBetween(start_time, end_time);
+        return ResponseEntity.ok(res);
     }
 
-    @GetMapping("/event/today")
-    public ResponseEntity<List<Event>> getTodayEvents() {
-        List<Event> todayEvents = repository.findByDate(LocalDate.now());
+    @GetMapping("/{id}")
+    public ResponseEntity<EventResponse> getEventById(@PathVariable("id") Long id) {
+        EventResponse res = service.getEventById(id);
+
+        return ResponseEntity.ok(res);
+    }
+
+    @GetMapping("/today")
+    public ResponseEntity<List<EventResponse>> getTodayEvents() {
+        List<EventResponse> todayEvents = service.getTodayEvents();
         return ResponseEntity.ok(todayEvents);
     }
 
-    @PostMapping("/event")
-    public Map<String, String> createEvent(@Valid @RequestBody EventRequest req) {
-        Event newEvent = new Event();
-        newEvent.setEvent(req.getEvent());
-        newEvent.setDate(req.getDate());
-
-        repository.save(newEvent);
-
-        return Map.of(
-                "message", "The event has been added!",
-                "event", req.getEvent(),
-                "date", req.getDate().toString()
+    @PostMapping("/newevent")
+    public ResponseEntity<EventCreationResponse> createEvent(@Valid @RequestBody EventRequest req) {
+        EventResponse savedEvent = service.createEvent(req);
+        EventCreationResponse res = new EventCreationResponse(
+                "event was created!",
+                savedEvent.event(),
+                savedEvent.date().toString()
         );
+        return ResponseEntity.ok(res);
     }
 
-    @DeleteMapping("/event/{id}")
-    public ResponseEntity<Event> deleteEventById(@PathVariable("id") Long id) {
-        ResponseEntity<Event> event = getEventById(id);
-        repository.deleteById(id);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<EventDeletionResponse> deleteEventById(@PathVariable("id") Long id) {
+        EventResponse deletedEvent = service.deleteEventById(id);
+        EventDeletionResponse res = new EventDeletionResponse(
+                "event was deleted",
+                deletedEvent.event(),
+                deletedEvent.date().toString()
+        );
 
-        return event;
+        return ResponseEntity.ok(res);
     }
+
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Void> handleValidationExceptions() {

@@ -2,28 +2,13 @@ package webCalendarSpring.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
 
-public class EventRequest {
-    @NotBlank
-    private String event;
-    @NotNull
-    private LocalDate date;
-
-    public @NotBlank String getEvent() {
-        return event;
-    }
-
-    public void setEvent(@NotBlank String event) {
-        this.event = event;
-    }
-
-    public @NotNull LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(@NotNull LocalDate date) {
-        this.date = date;
-    }
-}
+public record EventRequest (
+        @NotBlank(message = "Event cannot be empty")
+        String event,
+        @NotNull(message = "Date cannot be null")
+        LocalDate date
+) {}

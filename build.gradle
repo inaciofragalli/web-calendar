@@ -17,7 +17,6 @@ repositories {
     mavenCentral()
 }
 
-// Aponta exatamente para onde seus arquivos estão guardados
 sourceSets {
     main {
         java.srcDirs = ['web-calendar-api/src']
