@@ -34,11 +34,10 @@ public class EventController {
             return ResponseEntity.ok(events);
         }
 
-        List<Event> events = repository.findAll();
-
-        if (events.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
+    @GetMapping("/between")
+    public ResponseEntity<List<EventResponse>> getEventBetween(
+            @RequestParam("start_time") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start_time,
+            @RequestParam("end_time") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end_time) {
 
         return ResponseEntity.ok(events);
     }
