@@ -73,10 +73,14 @@ public class EventController {
         );
     }
 
-    @DeleteMapping("/event/{id}")
-    public ResponseEntity<Event> deleteEventById(@PathVariable("id") Long id) {
-        ResponseEntity<Event> event = getEventById(id);
-        repository.deleteById(id);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<EventDeletionResponse> deleteEventById(@PathVariable Long id) {
+        EventResponse deletedEvent = service.deleteEventById(id);
+        EventDeletionResponse res = new EventDeletionResponse(
+                "event was deleted",
+                deletedEvent.event(),
+                deletedEvent.date().toString()
+        );
 
         return event;
     }
