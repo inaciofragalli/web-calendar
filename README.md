@@ -25,11 +25,12 @@ This project is a RESTful backend application built with Spring Boot to manage c
 ---
 
 ## API Endpoints
-* `GET /event` — Retrieves all events or filters them using optional `start_time` and `end_time` query parameters.
-* `GET /event/today` — Fetches all events scheduled for the current date.
-* `GET /event/{id}` — Retrieves a specific event by its unique identifier.
-* `POST /event` — Creates and validates a new calendar event.
-* `DELETE /event/{id}` — Deletes an event by its ID.
+* `GET /events` — Retrieves all events
+* `GET /events/between` - Filters events by start_time and end_time parameters.
+* `GET /events/today` — Fetches all events scheduled for the current date.
+* `GET /events/{id}` — Retrieves a specific event by its unique identifier.
+* `POST /events/newevent` — Creates and validates a new calendar event.
+* `DELETE /events/{id}` — Deletes an event by its ID.
 * **Request Body Example (JSON):**
     ```json
     {
